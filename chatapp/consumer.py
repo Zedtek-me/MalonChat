@@ -10,10 +10,11 @@ class UserChats(AsyncWebsocketConsumer):
     It's an asynchronous way of handling the connection, although, I could use the synchronouse too.
     '''
     incoming_users= [] # I deliberately set this, because I might need a reference to all users connected later. So, I append the username of all incoming users to this List (or Array)
-    async def connect(self, event):
-        self.user= await self.scope.get('user')#gets the current user, available in the current TCP scope(the AuthMiddleWareStack makes this possible.)
-        self.incoming_user.append(self.user.username)
-        self.room= await self.scope['url_routes']['kwargs'].get('room_name')#checks if the user specifies a room to enter
+    async def connect(self):
+        self.user= self.scope.get('user').username#gets the current user, available in the current TCP scope(the AuthMiddleWareStack makes this possible.)
+        self.incoming_users.append(self.user)
+        self.room= self.scope['url_route']['kwargs'].get('room_name')#checks if the user specifies a room to enter
+        print(self.room)
         if(self.room):
             '''
             adds user to a room if a room is specified to be entere.
