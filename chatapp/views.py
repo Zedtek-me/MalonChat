@@ -1,6 +1,4 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User #using the defualt user that comes with django
-from django.contrib import messages
+from django.shortcuts import render
 # from django.contrib.auth.decorators import login_required, permission_required #intended for interface restriction.
 
 
@@ -12,10 +10,11 @@ def index(request):
     return render(request, 'index.html', {'user':user})
 
 
-def room_view(request):
+def room_view(request, room_name):
     user= request.user
+    room_name= room_name
     '''
     this returns the page for the chat itself, where users can connect.
     '''
-    return render(request, 'room.html', {'user':user})
+    return render(request, 'room.html', {'user':user, 'room_name': room_name})
 # Create your views here.

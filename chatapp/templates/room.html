@@ -1,0 +1,21 @@
+{%extends 'base.html'%}
+{%load static%}
+{%block title%}Room{%endblock%}
+
+
+{%block body%}
+<div class="room-cont">
+    <div id="room-name">
+        {{room_name}} <!-- gets this room name from the view, since the view unpacks the url route and passes it as a context-->
+    </div>
+    <div class="chat-msg"> 
+        <!--chat messages to and from websocket are displayed here; just for display alone.-->
+    
+    </div>
+    <textarea name="user-input" id="user-input" cols="30" rows="10" placeholder="type your messages here">
+        <!-- where user typ in their texts for sending -->
+    </textarea>
+    <input type="button" value="" name="click-btn" id="click-btn">
+    <script src="{%static 'src/index.js'%}"></script>
+</div>
+{%endblock%}

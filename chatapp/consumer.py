@@ -52,5 +52,9 @@ class UserChats(AsyncWebsocketConsumer):
         Takes the disconnection event from the user.
         I have no reason to delibrately disconnect a user, so I expect that the users may arbitrarilly want to disconnect.
         '''
+        self.channel_layer.group_discard(#removes user from the room first, before disconnection.
+            self.room, 
+            self.channel_name
+        )
         self.incoming_users.remove(self.user.username)#remove the user disconnecting from the list of users first, before disconnecting
         await self.disconnect()
