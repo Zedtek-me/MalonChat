@@ -14,10 +14,9 @@ class UserChats(AsyncWebsocketConsumer):
         self.user= self.scope.get('user').username#gets the current user, available in the current TCP scope(the AuthMiddleWareStack makes this possible.)
         self.incoming_users.append(self.user)
         self.room= self.scope['url_route']['kwargs'].get('room_name')#checks if the user specifies a room to enter
-        print(self.room)
         if(self.room):
             '''
-            adds user to a room if a room is specified to be entere.
+            adds user to a room if a room is specified to be entered.
             A custom distributed system known as channels layers, is provided for django
             channels. This distributed system is what provides the 'channel_layer' attribute(an instance of Channel_Layer class)
             '''
