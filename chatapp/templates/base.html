@@ -1,0 +1,35 @@
+{%load static%}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{%block title%}Home page{%endblock%}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="Keywords" content="A chat and video application using django and djnago channels">
+        <meta http-equiv="X-UA-Compatible">
+        <link rel="stylesheet" href="{%static 'css/index.css'%}" type="text/css">
+        <link rel="icon" href="{%static 'img/icon.jpg'%}" type="image/jpg">
+    </head>
+    <body class="body">
+        <header id="main-header">
+            <ul id="large-screen">
+                <li> <a href="">Home</a></li>
+                <li> <a href="">Room</a></li>
+                <li> <a href="">Profile</a></li>
+            </ul>
+            <!-- do mobile here -->
+            <ul>
+
+            </ul>
+        </header>
+        <div class="body-content-cont">
+            {%block body%}
+            <!-- for other custom contents on each pages -->
+            {%endblock%}
+        </div>
+    </body>
+    <footer id="footer">
+        <div class="footer-cont">
+            <h1 id="txt">Meant for Footer</h1>
+        </div>
+    </footer>
+</html>
