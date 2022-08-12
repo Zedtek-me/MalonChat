@@ -28,20 +28,90 @@ header{
 #large-screen > li a {
     text-decoration: none;
     color: black;
-    transition: all 0.5s ease;
+    transition: all 0.2s ease;
 }
 
 #large-screen > li a:hover{
-    color:yellowgreen;
+    background-color:rgb(117, 160, 30);
+    color: white;
+    padding: 3px;
+    border-radius: 10px;
 }
-
+ #large-screen>*{
+    margin: 10px;
+ }
 /* styles for the body */
 
-.body-content-con{
+.body-content-cont{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     margin: auto;
     padding: 5px;
+    width: 100%;
+}
+
+.room-cont{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background-color: beige;
+    color: black;
+    width: 100%;
+}
+
+#room-name{
+    display: none;
+}
+
+.chat-msg{
+    border: solid 1px black;
+    width: 50%;
+    height: 300px;
+}
+
+.type-msgs{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    width: 50%;
+}
+.type-msgs>*{
+    margin: 3px;
+}
+#user-input{
+    width: 50%;
+    height: fit-content;
+    padding: 10px;
+    text-align: center;
+    border-radius: 25px;
+}
+
+#click-btn{
+    width: 10%;
+    height: 30px;
+    padding: 5px;
+    text-align: center;
+    border-radius: 15px;
+    background-color: yellowgreen;
+    color: black;
+    transition: all 0.2s ease;
+}
+
+#click-btn:hover{
+    background-color: rgb(126, 168, 41);
+    color: white;
+}
+
+/* footer here */
+footer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
