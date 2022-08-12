@@ -8,7 +8,7 @@
     <div id="room-name">
         {{room_name}} <!-- gets this room name from the view, since the view unpacks the url route and passes it as a context-->
     </div>
-    <div class="chat-msg"> 
+    <div class="chat-msg" placeholder="All messages go in here"> 
         <!--chat messages to and from websocket are displayed here; just for display alone.-->
     
     </div>
@@ -17,6 +17,26 @@
 
         </textarea>
         <input type="button" value="Send" name="click-btn" id="click-btn">
+    </div>
+
+    <div class="vid-prompt-btn">
+        <!-- meant to contain buttons that'll prompt users on video calling -->
+        <div class="prompt-btn">
+            <input type="button" value="Start Video" name="start-vid" id="start-vid">
+            <input type="button" value="Join Video" name="join-vid" id="join-vid">
+            <input type="button" value="End Video" name="end-video", id="end-vid">
+        </div>
+    </div>
+
+    <!-- video functionalities go below here -->
+    <div class="video-cont">
+        <!-- meant for the video chats of users 
+        Remote user video shall be created when he/she joins a room.
+        This video element below, gets automatically updated with streams by javascript
+        -->
+        <video src="" id="user-video">
+
+        </video>
     </div>
     <script src="{%static 'src/index.js'%}"></script>
 </div>

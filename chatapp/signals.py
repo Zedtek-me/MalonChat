@@ -11,7 +11,7 @@ def create_profile(sender, created, instance, **kwargs):
     All signals in django sends some properties of their senders along with them; hence, the parameter given above.
     '''
     if created:
-        profile= UserProfile.object.create(user= instance)
+        profile= UserProfile.objects.create(user= instance)
 
 
 post_save.connect(create_profile, User)

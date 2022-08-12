@@ -5,4 +5,5 @@ class WalletAdmin(admin.ModelAdmin):
     list_filter= ['owner', 'wallet_name']
     fields= ['owner', 'wallet_name']
 # Register your models here.
-admin.site.register([(Wallet, WalletAdmin), User, Tip, UserProfile])
+admin.site.register(Wallet, WalletAdmin)
+admin.site.register([Tip, UserProfile])
