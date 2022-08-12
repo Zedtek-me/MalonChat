@@ -3,24 +3,33 @@ let protocolSheme= window.location.origin.split(':')[0] === 'http' ? 'ws' : 'wss
 let websocketUrl= `${protocolSheme}://${window.location.host}/chat`
 
 // major functions to handle other things below.
-const chatImplementations= ()=>{
-    let roomName= document.querySelector('#room-name').textContent
-    let chatMsg= document.querySelector('.chat-msg')
-    let clickBtn= document.querySelector('#click-btn')
-    let userInput= document.querySelector('#user-input')
-    let socket = new WebSocket(`${websocketUrl}/roomName/`)//websocket gets instantiated here.
-
-    socket.onmessage= (e)=>{// this checks if a message has come in, and then displays the message in the container provided as 'chatMsg'
+const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
+    let socket = new WebSocket(`${websocketUrl}${roomName}/`)//websocket gets instantiated here.
+    let rtcPeer= new RTCPeerConnection()// webRTC gets instantiated here it needs to be provisioned a stun server configuration, which I'll implement soon.
+    
+    // Handling of events starts below for both websocket and webRTC
+    socket.onmessage= (e)=>{
         let data = JSON.parse(e.data)
         let userFromBackend= data.user
         chatMsg.textContent = data.message
     }
 
-    clickBtn.onclick= (event)=>{
+    sendBtn.onclick= (event)=>{
         //to know when the user is going to be sending a message to the websocket handler at the backend.
-        let messageToSend= userInput.value
+        let messageToSend= textToSend.value
         if (messageToSend && (messageToSend !== '' || messageToSend !== '0')){ //this checks whether a user intends to send a message, and not just a mistake of pressing the send button.
             socket.send( JSON.stringify(messageToSend)) //sends the data to the websocket handler on the backend.
         }
     }
+    socket.onclose= (e)=>{
+        //handles a close even: tells others informs that something has happended at the backend.
+        chatMsg.textContent= 'Connection closed unexpectedly.'
+    }
 }
+// needed html elements go below
+let roomName= document.querySelector('#room-name').textContent
+let chatMsg= document.querySelector('.chat-msg')
+let clickBtn= document.querySelector('#click-btn')
+let userInput= document.querySelector('#user-input')
+
+chatImplementations(roomName, chatMsg, clickBtn, userInput) //calling my functions with the appropriate elements
