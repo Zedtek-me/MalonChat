@@ -8,7 +8,7 @@ class UserProfile(models.Model):
     This extends the built in User table that comes with django, as its user profile, 
     having other columns as given below.
     '''
-    user= models.OneToOneField(on_delete=models.CASCADE)
+    user= models.OneToOneField(User, on_delete=models.CASCADE)
     video_host= models.BooleanField('Started a video', default=False)
     video_guest= models.BooleanField('A video guest?', default=True)
 
@@ -36,7 +36,7 @@ class Tip(models.Model):
     and a "giver"(or User) could give More than a single tip as well.
     '''
     wallet= models.ForeignKey(Wallet, on_delete=models.CASCADE)
-    giver= models.ForeignKey(User, on_delete=models.SET_NULL)
+    giver= models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     amount= models.IntegerField('Tip\'s worth', blank=False, null= False, unique=False)
     date_given= models.DateTimeField('When tipped', auto_now_add=True)
 
