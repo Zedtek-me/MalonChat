@@ -3,7 +3,7 @@ let protocolScheme= window.location.origin.split(':')[0] === 'http' ? 'ws' : 'ws
 let websocketUrl= `${protocolScheme}://${window.location.host}/chat`
 
 // major functions to handle other things below.
-const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
+const chatImplementations= async (roomName, chatMsg, sendBtn, textToSend)=>{
     let socket = new WebSocket(`${websocketUrl}/${roomName}/`)//websocket gets instantiated here.
     let rtcPeer= new RTCPeerConnection()// webRTC gets instantiated here it needs to be provisioned a stun server configuration, which I'll implement soon.
     
@@ -12,7 +12,7 @@ const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
     let endVidBtn = document.querySelector('#end-vid')
     let joinVidBtn= document.querySelector('#join-vid')
     let localVid= document.querySelector('#user-vid')
-    
+    let vidElementsContainer= document.querySelector('.video-cont')// this container should append all video elements of connecting users
     // adding event listeners to all button below, for their respective actions
     startVidBtn.addEventListener('click', async (e)=>{
         /**
@@ -41,11 +41,7 @@ const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
         let userFromBackend= data.user //this gets the currently authenticated user, as passed down from message sent from backend.
         
         /** check for the whether message was either an offer by the host, or an answer by a peer, or random text for message
-         * to know what to do with the message. 
-         * (I'd like to dynamically create the remote user video here when the remote user creates an
-         * answer for the incoming offer; this way, as much users that join the live session can have their video element created dynamically without
-         * already having some static video element like our local user.)
-         * 
+         * to know what to do with the message.
         */
        if (data.offer){
         //so if we receive an offer from the video chat starter, we want to respond to it by creating an answer, and setting the respective SDPs(Session Descriptions--> which are still same as our offers and answers, though)
@@ -54,6 +50,10 @@ const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
         rtcPeer.setRemoteDescription(remoteOffer)
         //now set my answer as my local description 
         rtcPeer.setLocalDescription(localAnswer)
+        //now get my local media streams, and add them to the local video element and to RTC session immediately
+        let mediaStreamForAnswer= await navigator.mediaDevices.getUserMedia({video:true, audio:true})
+        localVid.srcObject= mediaStreamForAnswer
+        mediaStreamForAnswer.getTracks().forEach((track)=> rtcPeer.addTrack(track, mediaStreamForAnswer))
         //then send my answer to the host of the video (the offer creator), through my signaling server (websocket)
         socket.send(JSON.stringify(localAnswer))
        }
@@ -96,6 +96,20 @@ const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
     /** other events related to rtc objects go below (events for things like getting the ice-candidate(public socket) when it's ready);
      * listening for when our the remote user started adding its own media tracks to the session
     */
+
+    rtcPeer.addEventListener('track', (e)=>{
+        /** Listen for the remote tracks coming into the session; 
+         * then create remote user video, to start receiving media streams from the remote user.
+        */
+        let remoteVid= document.createElement('VIDEO')
+        remoteVid.id= 'remote-vid'
+        remoteVid.autoplay= true
+        vidElementsContainer.appendChild(remoteVid)
+        //now get the remote streams from the event, and add them to this video element
+        let remoteStreams = e.streams
+        remoteVid.srcObject= remoteStreams
+        //now add the tracks to this video element just created.
+    })
 }
 // needed html elements go below for websocket chat here
 let roomName= document.querySelector('#room-name').textContent.trim()// the room name we got from the url, and passed down to our templates through context processor
