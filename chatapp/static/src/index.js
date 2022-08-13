@@ -3,7 +3,10 @@ let protocolScheme= window.location.origin.split(':')[0] === 'http' ? 'ws' : 'ws
 let websocketUrl= `${protocolScheme}://${window.location.host}/chat`
 
 // major functions to handle other things below.
-const chatImplementations= async (roomName, chatMsg, sendBtn, textToSend)=>{
+const chatImplementations=(roomName, chatMsg, sendBtn, textToSend)=>{
+    /**
+     * this function handles pretty much all we need with our users for both video, audio and chats.
+     */
     let socket = new WebSocket(`${websocketUrl}/${roomName}/`)//websocket gets instantiated here.
     let rtcPeer= new RTCPeerConnection()// webRTC gets instantiated here it needs to be provisioned a stun server configuration, which I'll implement soon.
     
@@ -17,9 +20,10 @@ const chatImplementations= async (roomName, chatMsg, sendBtn, textToSend)=>{
     startVidBtn.addEventListener('click', async (e)=>{
         /**
          * Starts user video, and then create an offer to be sent to other users through
-         * websocket, for peer to peer streaming of videos media
+         * websocket, for peer to peer streaming of video media
          * webRTC has asynchronous interface(returns Promises objects), therefore, I need to use async await
          */ 
+        joinVidBtn.disabled= true //this sets the join button inactive when a user starts a video session.
         let mediaStream= await navigator.mediaDevices.getUserMedia({video:true, audio:true})//gets video and audio media data of the user starting a live session
         localVid.srcObject= mediaStream//passes streams to local video element
         mediaStream.getTracks().forEach((track)=> rtcPeer.addTrack(track, mediaStream))/** this is to add all the media data(audio and video) we get from a local user, into the current RTC session
@@ -36,7 +40,7 @@ const chatImplementations= async (roomName, chatMsg, sendBtn, textToSend)=>{
 
 
     // Handling of events starts below for both websocket and webRTC
-    socket.onmessage= (e)=>{
+    socket.onmessage= async (e)=>{
         let data = JSON.parse(e.data)
         let userFromBackend= data.user //this gets the currently authenticated user, as passed down from message sent from backend.
         
