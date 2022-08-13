@@ -13,6 +13,7 @@ const chatImplementations=(roomName, chatMsg, sendBtn, textToSend)=>{
     // buttons to start/end video are selected for events on when a user intends to start video
     let startVidBtn= document.querySelector('#start-vid')
     let endVidBtn = document.querySelector('#end-vid')
+    let leaveMeeting= document.querySelector('#leave-meet')
     let joinVidBtn= document.querySelector('#join-vid')
     let localVid= document.querySelector('#user-vid')
     let vidElementsContainer= document.querySelector('.video-cont')// this container should append all video elements of connecting users
@@ -23,13 +24,15 @@ const chatImplementations=(roomName, chatMsg, sendBtn, textToSend)=>{
          * websocket, for peer to peer streaming of video media
          * webRTC has asynchronous interface(returns Promises objects), therefore, I need to use async await
          */ 
-        joinVidBtn.disabled= true //this sets the join button inactive when a user starts a video session.
+        joinVidBtn.disabled= true //this sets the join button disabled when a user starts a video session.
+        joinVidBtn.style.backgroundColor= 'grey'
         let mediaStream= await navigator.mediaDevices.getUserMedia({video:true, audio:true})//gets video and audio media data of the user starting a live session
         localVid.srcObject= mediaStream//passes streams to local video element
         mediaStream.getTracks().forEach((track)=> rtcPeer.addTrack(track, mediaStream))/** this is to add all the media data(audio and video) we get from a local user, into the current RTC session
         This is efficient because, immediately our offer is accepted and the each peer has the nominated "ICE candidate(i.e, our IP:PORT_NUMBER in the public)", each peer can immediately start receiving
         each other's media stream*/
         localVid.style.display= 'flex'
+        endVidBtn.style.display= 'flex' //displays the end meeting button for the video host
         let localOffer= rtcPeer.createOffer()// creates an offer here to be sent to anyone whoe wants to join the current video session
         rtcPeer.setLocalDescription(localOffer)// sets my offer as my local description
         
@@ -58,6 +61,9 @@ const chatImplementations=(roomName, chatMsg, sendBtn, textToSend)=>{
         let mediaStreamForAnswer= await navigator.mediaDevices.getUserMedia({video:true, audio:true})
         localVid.srcObject= mediaStreamForAnswer
         mediaStreamForAnswer.getTracks().forEach((track)=> rtcPeer.addTrack(track, mediaStreamForAnswer))
+        // disable some buttons here when you join a meeting (join, start, end)
+        startVidBtn.style.display= 'none'
+        endVidBtn.style.display= 'none'
         //then send my answer to the host of the video (the offer creator), through my signaling server (websocket)
         socket.send(JSON.stringify(localAnswer))
        }

@@ -24,19 +24,24 @@
         <div class="prompt-btn">
             <input type="button" value="Start Video" name="start-vid" id="start-vid">
             <input type="button" value="Join Video" name="join-vid" id="join-vid">
-            <input type="button" value="End Video" name="end-video", id="end-vid">
         </div>
     </div>
 
     <!-- video functionalities go below here -->
-    <div class="video-cont">
-        <!-- meant for the video chats of users 
-        Remote user video shall be created when he/she joins a room.
-        This video element below, gets automatically updated with streams by javascript
-        -->
-        <video id="user-vid" autoplay>
-
-        </video>
+    <div class="video-cont-nd-ctrlBtn">
+        <div class="video-cont">
+            <!-- meant for the video chats of users 
+            Remote user video shall be created when he/she joins a room.
+            This video element below, gets automatically updated with streams by javascript
+            -->
+            <video id="user-vid" autoplay>
+    
+            </video>
+        </div>
+        <div class="leave-vid-prompts">
+            <input type="button" value="End Video" name="end-video", id="end-vid">
+            <input type="button" value="Leave Meeting" name="leave-meet" id="leave-meet">
+        </div>
     </div>
     <script src="{%static 'src/index.js'%}"></script>
 </div>

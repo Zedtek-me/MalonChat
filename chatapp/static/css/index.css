@@ -107,6 +107,16 @@ header{
     color: white;
 }
 
+.video-cont-nd-ctrlBtn{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.video-cont-nd-ctrlBtn>*{
+    margin: 10px;
+}
 .video-cont{
     display: flex;
     justify-content: center;
@@ -118,6 +128,41 @@ header{
     width: 20%;
     height: 20%;
     border:solid 1px black;
+}
+
+.vid-prompt-btn{
+    width: 50%;
+}
+.prompt-btn, .leave-vid-prompts{
+    /* holds all input for buttons */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.prompt-btn >input, .leave-vid-prompts>input{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width:fit-content;
+    height: 20px;
+    border-radius: 15px;
+    padding: 15px;
+    background-color: yellowgreen;
+    color: black;
+    cursor: pointer;
+}
+
+.prompt-btn #join-vid{
+    background-color: skyblue;
+}
+
+.leave-vid-prompts>input{
+    display: none;
+    background-color:red;
+    color: white;
 }
 /* footer here */
 footer{
