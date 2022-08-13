@@ -20,15 +20,18 @@ const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
          * websocket, for peer to peer streaming of videos media
          * webRTC has asynchronous interface(returns Promises objects), therefore, I need to use async await
          */ 
-        let mediaStream= await navigator.mediaDevices.getUserMedia({video:true, audio:true})//gets video and audio data for the user
+        let mediaStream= await navigator.mediaDevices.getUserMedia({video:true, audio:true})//gets video and audio media data of the user starting a live session
         localVid.srcObject= mediaStream//passes streams to local video element
+        mediaStream.getTracks().forEach((track)=> rtcPeer.addTrack(track, mediaStream))/** this is to add all the media data(audio and video) we get from a local user, into the current RTC session
+        This is efficient because, immediately our offer is accepted and the each peer has the nominated "ICE candidate(i.e, our IP:PORT_NUMBER in the public)", each peer can immediately start receiving
+        each other's media stream*/
         localVid.style.display= 'flex'
         let localOffer= rtcPeer.createOffer()// creates an offer here to be sent to anyone whoe wants to join the current video session
         rtcPeer.setLocalDescription(localOffer)// sets my offer as my local description
         
-        // socket.send(JSON.stringify({ //send this offer to web socket backend for any who'd like to join the session
-        //     offer: localOffer
-        // }))
+        socket.send(JSON.stringify({ //send this offer to web socket backend for any who'd like to join the session
+            offer: localOffer
+        }))
     })
 
 
@@ -38,7 +41,10 @@ const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
         let userFromBackend= data.user //this gets the currently authenticated user, as passed down from message sent from backend.
         
         /** check for the whether message was either an offer by the host, or an answer by a peer, or random text for message
-         * to know what to do with the message
+         * to know what to do with the message. 
+         * (I'd like to dynamically create the remote user video here when the remote user creates an
+         * answer for the incoming offer; this way, as much users that join the live session can have their video element created dynamically without
+         * already having some static video element like our local user.)
          * 
         */
     }
@@ -55,11 +61,15 @@ const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
         //handles a close even: tells others informs that something has happended at the backend.
         chatMsg.textContent= 'Connection closed unexpectedly.'
     }
+
+    /** other events related to rtc objects go below (events for things like getting the ice-candidate(public socket) when it's ready);
+     * listening for when our the remote user started adding its own media tracks to the session
+    */
 }
 // needed html elements go below for websocket chat here
-let roomName= document.querySelector('#room-name').textContent.trim()
-let chatMsg= document.querySelector('.chat-msg')
-let clickBtn= document.querySelector('#click-btn')
-let userInput= document.querySelector('#user-input')
+let roomName= document.querySelector('#room-name').textContent.trim()// the room name we got from the url, and passed down to our templates through context processor
+let chatMsg= document.querySelector('.chat-msg')// the box that shows all the messages we send to the users
+let clickBtn= document.querySelector('#click-btn')// the button to send our websocket message
+let userInput= document.querySelector('#user-input')//the widget to type in your messages.
 
 chatImplementations(roomName, chatMsg, clickBtn, userInput) //calling my functions with the appropriate elements
