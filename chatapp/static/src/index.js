@@ -47,6 +47,37 @@ const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
          * already having some static video element like our local user.)
          * 
         */
+       if (data.offer){
+        //so if we receive an offer from the video chat starter, we want to respond to it by creating an answer, and setting the respective SDPs(Session Descriptions--> which are still same as our offers and answers, though)
+        let localAnswer= rtcPeer.createAnswer()// creates an asnwer.
+        let remoteOffer= new RTCSessionDescription(data.offer)//creates an object of SDP so I can set it as a remote SD
+        rtcPeer.setRemoteDescription(remoteOffer)
+        //now set my answer as my local description 
+        rtcPeer.setLocalDescription(localAnswer)
+        //then send my answer to the host of the video (the offer creator), through my signaling server (websocket)
+        socket.send(JSON.stringify(localAnswer))
+       }
+
+       else if (data.answer){
+        /**so if I as a local user, have created an offer, and then I awaited an answer from any peer listening to the offer on the signaling server(websocke),
+         * I just have to perform the ssame process as above for their answers.
+        */
+        let remoteAnser= new RTCSessionDescription(data.answer)
+        //now add their answer as a remote SDP
+        rtcPeer.setRemoteDescription(remoteAnser)
+        /**
+         * that's all I have to do. There's no need of creating and setting local description anymore, since I did that earlier
+         * when I was creating an offer.
+         * */ 
+       }
+
+       else{
+        /**
+         * now this is to handle other messages that come from any peer, through our signaling server (websocket.)
+         * Majorly, this is going to be a regular chat message, so I just have to display this in the chat box.
+         */
+        chatMsg.textContent= data.message 
+       }
     }
 
     sendBtn.onclick= (event)=>{
