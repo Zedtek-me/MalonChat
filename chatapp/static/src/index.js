@@ -11,8 +11,9 @@ const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
     let startVidBtn= document.querySelector('#start-vid')
     let endVidBtn = document.querySelector('#end-vid')
     let joinVidBtn= document.querySelector('#join-vid')
-    let localVid= document.querySelector('user-vid')
-
+    let localVid= document.querySelector('#user-vid')
+    
+    // adding event listeners to all button below, for their respective actions
     startVidBtn.addEventListener('click', async (e)=>{
         /**
          * Starts user video, and then create an offer to be sent to other users through
@@ -21,17 +22,20 @@ const chatImplementations= (roomName, chatMsg, sendBtn, textToSend)=>{
          */ 
         let mediaStream= await navigator.mediaDevices.getUserMedia({video:true, audio:true})//gets video and audio data for the user
         localVid.srcObject= mediaStream//passes streams to local video element
+        localVid.style.display= 'flex'
         let localOffer= rtcPeer.createOffer()// creates an offer here to be sent to anyone whoe wants to join the current video session
         rtcPeer.setLocalDescription(localOffer)// sets my offer as my local description
         
-        socket.send(JSON.stringify({ //send this offer to web socket backend for any who'd like to join the session
-            offer: localOffer
-        }))
+        // socket.send(JSON.stringify({ //send this offer to web socket backend for any who'd like to join the session
+        //     offer: localOffer
+        // }))
     })
+
+
     // Handling of events starts below for both websocket and webRTC
     socket.onmessage= (e)=>{
         let data = JSON.parse(e.data)
-        let userFromBackend= data.user
+        let userFromBackend= data.user //this gets the currently authenticated user, as passed down from message sent from backend.
         
         /** check for the whether message was either an offer by the host, or an answer by a peer, or random text for message
          * to know what to do with the message

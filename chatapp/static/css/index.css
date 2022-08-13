@@ -107,6 +107,18 @@ header{
     color: white;
 }
 
+.video-cont{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100%
+}
+#user-vid, #remote-vid{
+    display: none;
+    width: 20%;
+    height: 20%;
+    border:solid 1px black;
+}
 /* footer here */
 footer{
     display: flex;
