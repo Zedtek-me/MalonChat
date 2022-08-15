@@ -65,7 +65,7 @@ const chatImplementations=(roomName, chatMsg, sendBtn, textToSend)=>{
         startVidBtn.style.display= 'none'
         endVidBtn.style.display= 'none'
         //then send my answer to the host of the video (the offer creator), through my signaling server (websocket)
-        socket.send(JSON.stringify(localAnswer))
+        socket.send(JSON.stringify({answer:localAnswer}))
        }
 
        else if (data.answer){
@@ -86,16 +86,18 @@ const chatImplementations=(roomName, chatMsg, sendBtn, textToSend)=>{
          * now this is to handle other messages that come from any peer, through our signaling server (websocket.)
          * Majorly, this is going to be a regular chat message, so I just have to display this in the chat box.
          */
-        chatMsg.textContent= data.message 
+        chatMsg.textContent= data.message.message
+        console.log(data)
        }
     }
 
     sendBtn.onclick= (event)=>{
         //to know when the user is going to be sending a message to the websocket handler at the backend.
-        let messageToSend= textToSend.value
+        let messageToSend= textToSend.value.trim()
         textToSend.value= ''
         if (messageToSend && (messageToSend !== '' || messageToSend !== '0')){ //this checks whether a user intends to send a message, and not just a mistake of pressing the send button.
-            socket.send( JSON.stringify(messageToSend)) //sends the data to the websocket handler on the backend.
+            console.log(messageToSend)
+            socket.send( JSON.stringify({message:messageToSend})) //sends the data to the websocket handler on the backend.
         }
     }
     socket.onclose= (e)=>{

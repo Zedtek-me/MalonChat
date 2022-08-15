@@ -24,25 +24,27 @@ class UserChats(AsyncWebsocketConsumer):
             self.channel_name
             )
         await self.accept()# accepts the incoming connection here, afterwards (whether or not a room is specified.)
+       
 
-    async def group_rcv(self, text_data):
+    async def receive(self, text_data):
         '''
         this receives a text data from the websocket frontend, and broadcasts it to the room which will be specified(the room name store in the 'room' variable above.)
         It also send back the event broadcasted into the group to a receiver function that sends it back to the user's websocket
         '''
         self.data= json.loads(text_data)#parse the data to text, since the frontend will stringify it with json
+        print(self.data)
         # do some check as to whether the messages received is an offer, answer, or any other text
         if self.data.get('offer'):
-            self.send(self.data.get('offer'))#sends the offer directly to the receiving user, and not group
+            await self.send(self.data.get(json.dumps('offer')))#sends the offer directly to the receiving user, and not group
         elif self.data.get('answer'):
-            self.send('answer')
+            await self.send(json.dumps('answer'))
         else:
             '''
             broadcast other things to the group
             '''
             await self.channel_layer.group_send(self.room,{
                 #the group_send method on channel layers takes 2 arguements (1 is the room it should send the event to, and two is the dictionary of the event to be sent)
-                'type': 'user.rcv', #this is the actual listener that is meant to send back the message to the websocket from the user who sends it at first, so that the websocket 'onmessage' event, can take it and handle it for the user too.
+                'type': 'user.recv', #this is the actual listener that is meant to send back the message to the websocket from the user who sends it at first, so that the websocket 'onmessage' event, can take it and handle it for the user too.
                 'user': self.user,
                 'message': self.data,
             })
@@ -53,17 +55,18 @@ class UserChats(AsyncWebsocketConsumer):
         of the event meant to be sent to the room. It takes the entire event that is sent to the room, and sends it back to the websocket object of the user,
         so that the 'onmessage' event of the user's websocket can take it, and handle display it to the user as well (as if saying 'here is what you sent to everybody in the group')
         '''
-        await self.send(event)
+        print(event)
+        await self.send(json.dumps(event))
 
     
-    async def disconnect(self, event):
+    async def disconnect_user(self, event):
         '''
         Takes the disconnection event from the user.
         I have no reason to delibrately disconnect a user, so I expect that the users may arbitrarilly want to disconnect.
         '''
-        self.channel_layer.group_discard(#removes user from the room first, before disconnection.
+        await self.channel_layer.group_discard(#removes user from the room first, before disconnection.
             self.room, 
             self.channel_name
         )
-        self.incoming_users.remove(self.user.username)#remove the user disconnecting from the list of users first, before disconnecting
-        await self.disconnect()
+        # self.incoming_users.remove(self.user)#remove the user disconnecting from the list of users first, before disconnecting
+        await self.disconnect(event)
