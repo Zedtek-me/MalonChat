@@ -139,6 +139,7 @@ header{
     justify-content: center;
     align-items: center;
     width: 100%;
+    height: 50px;
 }
 
 .prompt-btn >input, .leave-vid-prompts>input{
@@ -147,7 +148,7 @@ header{
     align-items: center;
     text-align: center;
     width:fit-content;
-    height: 20px;
+    height: 45%;
     border-radius: 15px;
     padding: 15px;
     background-color: yellowgreen;

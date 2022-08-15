@@ -31,12 +31,21 @@ class UserChats(AsyncWebsocketConsumer):
         It also send back the event broadcasted into the group to a receiver function that sends it back to the user's websocket
         '''
         self.data= json.loads(text_data)#parse the data to text, since the frontend will stringify it with json
-        await self.channel_layer.group_send(self.room,{
-            #the group_send method on channel layers takes 2 arguements (1 is the room it should send the event to, and two is the dictionary of the event to be sent)
-            'type': 'user.rcv', #this is the actual listener that is meant to send back the message to the websocket from the user who sends it at first, so that the websocket 'onmessage' event, can take it and handle it for the user too.
-            'user': self.user,
-            'message': self.data,
-        })
+        # do some check as to whether the messages received is an offer, answer, or any other text
+        if self.data.get('offer'):
+            self.send(self.data.get('offer'))#sends the offer directly to the receiving user, and not group
+        elif self.data.get('answer'):
+            self.send('answer')
+        else:
+            '''
+            broadcast other things to the group
+            '''
+            await self.channel_layer.group_send(self.room,{
+                #the group_send method on channel layers takes 2 arguements (1 is the room it should send the event to, and two is the dictionary of the event to be sent)
+                'type': 'user.rcv', #this is the actual listener that is meant to send back the message to the websocket from the user who sends it at first, so that the websocket 'onmessage' event, can take it and handle it for the user too.
+                'user': self.user,
+                'message': self.data,
+            })
 
     async def user_recv(self, event):
         '''
